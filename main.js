@@ -46,8 +46,8 @@ function initHeightmapApp() {
   const generateBtn = document.getElementById("generate");
   const randomSeedBtn = document.getElementById("random-seed");
 
-  setupControlListeners();
-  setupMouseControls();
+  Render.setupControlListeners();
+  Render.setupMouseControls();
 
   setTimeout(async () => {
     gl_start(canvas, {
@@ -65,29 +65,6 @@ function initHeightmapApp() {
 
   const data = getWasmHeightmap(256, 20, 2.0, 60, 42);
   Render.createHeightmapMesh(data, 256);
-}
-
-function setupControlListeners() {
-  const control = [{ id: "size", display: "size-value" }];
-}
-
-function setupMouseControls() {
-  mouse.drag = function (dx, dy) {
-    rotationX += dy * -0.5;
-    rotationY += dx * -0.5;
-  };
-
-  document.addEventListener(
-    "wheel",
-    function (e) {
-      if (e.target.id === "glCanvas") {
-        e.preventDefault();
-        scaleFactor += e.deltaY * -0.001;
-        scaleFactor = Math.max(0.1, Math.min(5.0, scaleFactor));
-      }
-    },
-    { passive: false }
-  );
 }
 
 window.addEventListener("load", initHeightmapApp);

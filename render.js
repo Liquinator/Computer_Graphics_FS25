@@ -110,3 +110,25 @@ async function loadShaderFile(path) {
     return null;
   }
 }
+export function setupControlListeners() {
+  const control = [{ id: "size", display: "size-value" }];
+}
+
+export function setupMouseControls() {
+  mouse.drag = function (dx, dy) {
+    rotationX += dy * -0.5;
+    rotationY += dx * 0.5;
+  };
+
+  document.addEventListener(
+    "wheel",
+    function (e) {
+      if (e.target.id === "glCanvas") {
+        e.preventDefault();
+        scaleFactor += e.deltaY * -0.001;
+        scaleFactor = Math.max(0.1, Math.min(5.0, scaleFactor));
+      }
+    },
+    { passive: false }
+  );
+}
