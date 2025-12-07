@@ -49,10 +49,12 @@ function initHeightmapApp() {
   setupControlListeners();
   setupMouseControls();
 
-  setTimeout(() => {
+  setTimeout(async () => {
     gl_start(canvas, {
-      vertexShader: Render.createVertexShader(),
-      fragmentShader: Render.createFragmentShader(),
+      vertexShader: await Render.createVertexShader(),
+      fragmentShader: await Render.createFragmentShader(
+        "/graphics/fragmentShader"
+      ),
       update: () => Render.updateScene(heightmapConfig),
     });
     const data = getWasmHeightmap(256, 20, 2.0, 60, 42);
