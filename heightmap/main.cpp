@@ -34,8 +34,7 @@ float* generateHeightmap(int dim, int octaves, double freq, int seed,
 }
 
 EMSCRIPTEN_KEEPALIVE
-float* placeTrees(int dim, float treeLine, float density, int seed,
-                  std::vector<float> heightmap) {
+float* placeTrees(int dim, float treeLine, float density, int seed) {
   HeightmapConfig moistureMapConfig;
   moistureMapConfig.seed = seed;
 

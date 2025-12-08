@@ -29,7 +29,7 @@ function getWasmHeightmap(size, octaves, freq, scale, seed) {
     dataPtr,
     totalFloats
   );
-  console.groupCollapsed("Wasm Data Inspection");
+  console.groupCollapsed("Wasm Heightmap Data Inspection");
   console.log(`Pointer Address: ${dataPtr}`);
   console.log(`Total Elements: ${heightData.length}`);
   console.log(`First Value: ${heightData[0]}`);
@@ -41,8 +41,7 @@ function getWasmHeightmap(size, octaves, freq, scale, seed) {
 function getWasmTreeLocation(size, treeLine, density, seed) {
   if (!Module.placeTrees) {
     try {
-      Module.generateHeightmap = Module.cwrap("Module", "number", [
-        "number",
+      Module.placeTrees = Module.cwrap("placeTrees", "number", [
         "number",
         "number",
         "number",
@@ -53,17 +52,32 @@ function getWasmTreeLocation(size, treeLine, density, seed) {
       return null;
     }
   }
+
+  if (!Module.getTreeCount) {
+    try {
+      Module.getTreeCount = Module.cwrap("getTreeCount", "number", []);
+    } catch (e) {
+      console.error("Failed to bind getTreeCount.", e);
+      return null;
+    }
+  }
+
   console.time("C++ Compute Time");
-
-  const dataPtr = Module._placeTrees(size, treeLine, density, seed);
-
+  const treeDataPtr = Module._placeTrees(size, treeLine, density, seed);
+  const totalFloats = Module._getTreeCount();
   console.timeEnd("C++ Compute Time");
 
   let treePlacement = new Float32Array(
     Module.HEAPF32.buffer,
-    dataPtr,
+    treeDataPtr,
     totalFloats
   );
+
+  console.groupCollapsed("Wasm Tree Placement Data Inspection");
+  console.log(`Pointer Address: ${treeDataPtr}`);
+  console.log(`Total Elements: ${treeDataPtr.length}`);
+  console.log(`First Value: ${treeDataPtr[0]}`);
+  console.groupEnd();
 
   return treePlacement;
 }

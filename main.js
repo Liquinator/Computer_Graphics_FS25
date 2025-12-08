@@ -53,7 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
       heightmapConfig.size,
       treePlacementConfig.treeLine,
       treePlacementConfig.density,
-      heightmapConfig.seed + 1
+      heightmapConfig.seed + 1,
+      heightmapData
     );
 
     if (heightmapData) {

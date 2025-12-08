@@ -15,7 +15,7 @@ const lightConfig = {
   ambientStrength: 0.3,
 };
 
-export function createTree() {}
+export function createTree(heightmapData, moistureMapConfig) {}
 
 export function createHeightmapMesh(heightmapData, heightmapConfig) {
   const vertexData = [];
