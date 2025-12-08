@@ -26,7 +26,7 @@ inline std::vector<std::vector<double>> generate_heightmap_seq(
   double adjusted_frequency = config.frequency * (dimensions / 256.0);
   return PerlinNoise.generate_normalized_heightmap(
       config.octaves, adjusted_frequency, glm::vec2(dimensions, dimensions),
-      heightmap);
+      config.scale, heightmap);
 }
 
 inline std::vector<std::vector<double>> generate_heightmap(

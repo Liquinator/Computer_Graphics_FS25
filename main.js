@@ -1,7 +1,7 @@
 import * as Render from "./render.js";
 
 let heightmapConfig = {
-  size: 512,
+  size: 256,
   octaves: 20,
   frequency: 2.0,
   scale: 60,
@@ -24,19 +24,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   btnGenerate.addEventListener("click", () => {
-    const size = parseInt(inputSize.value);
-    const octaves = parseInt(inputOctaves.value);
-    const freq = parseFloat(inputFreq.value);
-    const scale = parseFloat(inputScale.value);
-    const seed = parseInt(inputSeed.value);
-
-    console.log(
-      `Generating: Size=${size}, Oct=${octaves}, Freq=${freq}, Seed=${seed}`
+    heightmapConfig.size = parseInt(inputSize.value);
+    heightmapConfig.octaves = parseInt(inputOctaves.value);
+    heightmapConfig.freq = parseFloat(inputFreq.value);
+    heightmapConfig.scale = parseFloat(inputScale.value);
+    heightmapConfig.seed = parseInt(inputSeed.value);
+    const data = getWasmHeightmap(
+      heightmapConfig.size,
+      heightmapConfig.octaves,
+      heightmapConfig.freq,
+      heightmapConfig.scale,
+      heightmapConfig.seed
     );
-    const data = getWasmHeightmap(size, octaves, freq, scale, seed);
 
     if (data) {
-      Render.createHeightmapMesh(data, size);
+      Render.createHeightmapMesh(data, heightmapConfig);
     }
   });
 });
@@ -52,19 +54,17 @@ function initHeightmapApp() {
   setTimeout(async () => {
     gl_start(canvas, {
       vertexShader: await Render.createVertexShader(),
-      fragmentShader: await Render.createFragmentShader(
-        "/graphics/fragmentShader"
-      ),
+      fragmentShader: await Render.createFragmentShader(),
       update: () => Render.updateScene(heightmapConfig),
     });
     const data = getWasmHeightmap(256, 20, 2.0, 60, 42);
     if (data) {
-      Render.createHeightmapMesh(data, 256);
+      Render.createHeightmapMesh(data, heightmapConfig);
     }
   }, 200);
 
   const data = getWasmHeightmap(256, 20, 2.0, 60, 42);
-  Render.createHeightmapMesh(data, 256);
+  Render.createHeightmapMesh(data, heightmapConfig);
 }
 
 window.addEventListener("load", initHeightmapApp);

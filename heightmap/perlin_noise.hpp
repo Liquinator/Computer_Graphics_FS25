@@ -18,7 +18,7 @@ class PerlinNoise {
     permutation = p;
   };
   virtual std::vector<std::vector<double>> generate_normalized_heightmap(
-      int32_t octaves, double frequency, glm::vec2 dim,
+      int32_t octaves, double frequency, glm::vec2 dim, double scale,
       std::vector<std::vector<double>>& heightmap) = 0;
 
  protected:
@@ -43,7 +43,7 @@ class PerlinNoiseSeq : public PerlinNoise {
   PerlinNoiseSeq(const unsigned int seed) : PerlinNoise(seed) {}
 
   inline virtual std::vector<std::vector<double>> generate_normalized_heightmap(
-      int32_t octaves, double frequency, glm::vec2 dim,
+      int32_t octaves, double frequency, glm::vec2 dim, double scale,
       std::vector<std::vector<double>>& heightmap) override {
     float min, max = 0.0;
     for (int x = 0; x < dim.x; x++) {
@@ -68,7 +68,7 @@ class PerlinNoiseSeq : public PerlinNoise {
 
     for (int x = 0; x < dim.x; x++) {
       for (int y = 0; y < dim.y; y++) {
-        heightmap[x][y] = (heightmap[x][y] - min) / (max - min);
+        heightmap[x][y] = scale * heightmap[x][y] - min / (max - min);
       }
     }
 
