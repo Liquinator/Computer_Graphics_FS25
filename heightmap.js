@@ -14,10 +14,7 @@ function getWasmHeightmap(size, octaves, freq, scale, seed) {
         "number",
       ]);
     } catch (e) {
-      console.error(
-        "Failed to bind C++ function. Did you add it to EXPORTED_FUNCTIONS in compilation?",
-        e
-      );
+      console.error("Failed to bind C++ function.", e);
       return null;
     }
   }
@@ -36,20 +33,37 @@ function getWasmHeightmap(size, octaves, freq, scale, seed) {
   console.log(`Pointer Address: ${dataPtr}`);
   console.log(`Total Elements: ${heightData.length}`);
   console.log(`First Value: ${heightData[0]}`);
-  console.log(`Middle Value: ${heightData[Math.floor(heightData.length / 2)]}`);
-
-  if (
-    heightData[0] === 0 &&
-    heightData[1] === 0 &&
-    heightData[Math.floor(heightData.length / 2)] === 0
-  ) {
-    console.warn(
-      "⚠️ Warning: The generated data appears to be all zeros. Check your C++ logic or seed."
-    );
-  } else {
-    console.log("Data looks populated.");
-  }
   console.groupEnd();
 
   return heightData;
+}
+
+function getWasmTreeLocation(size, treeLine, density, seed) {
+  if (!Module.placeTrees) {
+    try {
+      Module.generateHeightmap = Module.cwrap("Module", "number", [
+        "number",
+        "number",
+        "number",
+        "number",
+        "number",
+      ]);
+    } catch (e) {
+      console.error("Failed to bind C++ function.", e);
+      return null;
+    }
+  }
+  console.time("C++ Compute Time");
+
+  const dataPtr = Module._placeTrees(size, treeLine, density, seed);
+
+  console.timeEnd("C++ Compute Time");
+
+  let treePlacement = new Float32Array(
+    Module.HEAPF32.buffer,
+    dataPtr,
+    totalFloats
+  );
+
+  return treePlacement;
 }

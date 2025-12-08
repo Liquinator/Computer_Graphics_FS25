@@ -4,7 +4,7 @@ export let rotationY = 0.3;
 export let scaleFactor = 1.0;
 
 const lightConfig = {
-  pos: [100.0, 300.0, 200.0],
+  pos: [100, 300, 200],
   lookDir: [0.0, 0.0, 1.0],
 
   flatColor: [0.294, 0.545, 0.231],
@@ -14,6 +14,8 @@ const lightConfig = {
   lightStrength: 1.2,
   ambientStrength: 0.3,
 };
+
+export function createTree() {}
 
 export function createHeightmapMesh(heightmapData, heightmapConfig) {
   const vertexData = [];
@@ -79,25 +81,29 @@ export async function createFragmentShader() {
 
 export function updateScene(heightmapConfig) {
   if (heightmapMesh) {
-    setUniform("3fv", "uLightPos", lightConfig.pos);
+    let fitScale = 1.5 / heightmapConfig.size;
+    let finalScale = fitScale * scaleFactor;
+    let modelMatrix = new Matrix()
+      .scale(finalScale, finalScale, finalScale)
+      .turnX(rotationX)
+      .turnY(rotationY)
+      .get();
+
+    let lightPos = transform(modelMatrix, [
+      lightConfig.pos[0],
+      lightConfig.pos[1],
+      lightConfig.pos[2],
+      1,
+    ]);
+
+    setUniform("3fv", "uLightPos", lightPos.slice(0, 3));
     setUniform("3fv", "uFlatColor", lightConfig.flatColor);
     setUniform("3fv", "uSteepColor", lightConfig.steepColor);
     setUniform("1f", "uSteepness", lightConfig.steepness);
     setUniform("1f", "uLightStrength", lightConfig.lightStrength);
     setUniform("1f", "uAmbientStrength", lightConfig.ambientStrength);
 
-    let fitScale = 1.5 / heightmapConfig.size;
-    let finalScale = fitScale * scaleFactor;
-
-    drawObj(
-      heightmapMesh,
-      new Matrix()
-        .scale(finalScale, finalScale, finalScale)
-        .turnX(rotationX)
-        .turnY(rotationY)
-        .get(),
-      [1, 1, 1]
-    );
+    drawObj(heightmapMesh, modelMatrix, [(1, 1, 1)]);
   }
 }
 

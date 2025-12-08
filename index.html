@@ -95,11 +95,35 @@
           <input type="range" id="scale" min="10" max="100" value="60" />
           <span id="scale-value">60</span>
         </div>
-
         <div class="control-group">
           <label for="seed">Seed:</label>
           <input type="range" id="seed" min="0" max="1000" value="42" />
           <span id="seed-value">42</span>
+        </div>
+
+        <div class="control-group">
+          <label for="treeLine">Tree Line:</label>
+          <input
+            type="range"
+            id="treeLine"
+            min="0.0"
+            max="1.0"
+            step="0.1"
+            value="0.5"
+          />
+          <span id="treeLine-value">0.5</span>
+        </div>
+        <div class="control-group">
+          <label for="treeDensity">Tree Density:</label>
+          <input
+            type="range"
+            id="treeDensity"
+            min="0.0"
+            max="1.0"
+            step="0.1"
+            value="0.5"
+          />
+          <span id="treeDensity-value">0.5</span>
         </div>
 
         <button id="generate">Generate Heightmap</button>
