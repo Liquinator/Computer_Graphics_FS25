@@ -4,6 +4,9 @@ in vec3 aNor;
 uniform mat4 uMF, uMI;
 out vec3 vPos;
 out vec3 vNor;
+out vec3 vLocalNor;
+out float vDist;
+
 
 void main() {
    vec4 pos = uMF * vec4(aPos, 1.0);
@@ -13,4 +16,7 @@ void main() {
    
    vPos = pos.xyz;
    vNor = nor.xyz;
+   vLocalNor = aNor;
+
+   vDist = length(pos.xyz);
 }
