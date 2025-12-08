@@ -8,7 +8,9 @@ in float vDist;
 
 uniform vec3 uLightPos;
 uniform vec3 uFlatColor;
+uniform vec3 uTreeTrunkColor;
 uniform vec3 uSteepColor;
+
 uniform float uSteepness;
 uniform float uLightStrength;
 uniform float uAmbientStrength;

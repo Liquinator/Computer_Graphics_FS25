@@ -34,23 +34,26 @@ float* generateHeightmap(int dim, int octaves, double freq, int seed,
 }
 
 EMSCRIPTEN_KEEPALIVE
-float* placeTrees(int dim, float treeLine, float density, int seed) {
+float* placeTrees(int dim, float treeLine, float density, float maxSlope,
+                  int seed) {
   HeightmapConfig moistureMapConfig;
   moistureMapConfig.seed = seed;
 
   TreePlacementConfig treeConfig;
   treeConfig.treeLine = treeLine;
   treeConfig.treeDensity = density;
+  treeConfig.maxSlope = maxSlope;
 
   auto moistureMap = generate_heightmap_seq(dim, moistureMapConfig);
   auto trees = place_trees_seq(heightmap, moistureMap, treeConfig);
 
   flat_tree_positions.clear();
-  flat_tree_positions.reserve(trees.size() * 2);
+  flat_tree_positions.reserve(trees.size() * 3);
 
   for (const auto& pos : trees) {
     flat_tree_positions.push_back(pos.x);
     flat_tree_positions.push_back(pos.y);
+    flat_tree_positions.push_back(pos.z);
   }
 
   return flat_tree_positions.data();

@@ -19,7 +19,7 @@ inline glm::vec3 surface_normal(int i, int j,
                                 const TreePlacementConfig& config) {
   int width = std::sqrt(heightmap.size());
 
-  float h = heightmap[i * width + j] * config.scale;
+  float h = heightmap[i * width + j];
 
   float h_left = (i > 0) ? heightmap[(i - 1) * width + j] * config.scale : h;
   float h_right =
@@ -35,30 +35,31 @@ inline glm::vec3 surface_normal(int i, int j,
   return glm::normalize(normal);
 }
 
-inline std::vector<glm::vec2> place_trees_seq(
+inline std::vector<glm::vec3> place_trees_seq(
     const std::vector<float>& heightmap,
     const std::vector<std::vector<double>>& moisture_map,
     const TreePlacementConfig& config = TreePlacementConfig{}) {
-  std::vector<glm::vec2> treeLocation;
+  std::vector<glm::vec3> treeLocation;
   int dimension = std::sqrt(heightmap.size());
 
   glm::vec2 dim = glm::vec2(dimension, dimension);
 
   for (int x = 0; x < dim.x; x++) {
     for (int y = 0; y < dim.y; y++) {
-      float height = heightmap[x * dimension + y];
+      float height = heightmap[x * dimension + y] / config.scale;
       if (height > config.treeLine) continue;
-      if ((float)moisture_map[x][y] < config.treeDensity) continue;
+      if ((float)moisture_map[x][y] / config.scale < config.treeDensity)
+        continue;
       glm::vec3 surface_norm = surface_normal(x, y, heightmap, config);
       if (glm::dot(surface_norm, glm::vec3(0.0, 0.0, 1.0)) < config.maxSlope)
         continue;
-      treeLocation.push_back(glm::vec2(x, y));
+      treeLocation.push_back(glm::vec3(x, y, height));
     }
   }
   return treeLocation;
 }
 
-inline std::vector<glm::vec2> place_trees(
+inline std::vector<glm::vec3> place_trees(
     const std::vector<float>& heightmap, bool use_parallel = false,
     const TreePlacementConfig& treeConfig = TreePlacementConfig{},
     const HeightmapConfig& moistureMapConfig = HeightmapConfig{}) {

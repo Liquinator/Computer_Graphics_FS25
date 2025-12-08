@@ -68,7 +68,7 @@ class PerlinNoiseSeq : public PerlinNoise {
 
     for (int x = 0; x < dim.x; x++) {
       for (int y = 0; y < dim.y; y++) {
-        heightmap[x][y] = scale * heightmap[x][y] - min / (max - min);
+        heightmap[x][y] = scale * (heightmap[x][y] - min) / range;
       }
     }
 

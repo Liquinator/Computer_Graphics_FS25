@@ -12,6 +12,7 @@ let treePlacementConfig = {
   size: heightmapConfig.size,
   treeLine: 0.5,
   density: 0.5,
+  maxSlope: 0.5,
   seed: heightmapConfig.seed + 1,
 };
 
@@ -24,8 +25,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputSeed = document.getElementById("seed");
   const inputTreeLine = document.getElementById("treeLine");
   const inputTreeDensity = document.getElementById("treeDensity");
+  const inputTreeMaxSlope = document.getElementById("treeSlope");
 
-  [inputSize, inputOctaves, inputFreq, inputScale, inputSeed].forEach((el) => {
+  [
+    inputSize,
+    inputOctaves,
+    inputFreq,
+    inputScale,
+    inputSeed,
+    inputTreeLine,
+    inputTreeDensity,
+    inputTreeMaxSlope,
+  ].forEach((el) => {
     el.addEventListener("input", (e) => {
       document.getElementById(`${e.target.id}-value`).textContent =
         e.target.value;
@@ -40,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     heightmapConfig.seed = parseInt(inputSeed.value);
     treePlacementConfig.treeLine = parseFloat(inputTreeLine.value);
     treePlacementConfig.density = parseFloat(inputTreeDensity.value);
+    treePlacementConfig.maxSlope = parseFloat(inputTreeMaxSlope.value);
 
     const heightmapData = getWasmHeightmap(
       heightmapConfig.size,
@@ -49,10 +61,11 @@ document.addEventListener("DOMContentLoaded", () => {
       heightmapConfig.seed
     );
 
-    const treePlacement = getWasmTreeLocation(
+    const treePlacementData = getWasmTreeLocation(
       heightmapConfig.size,
       treePlacementConfig.treeLine,
       treePlacementConfig.density,
+      treePlacementConfig.maxSlope,
       heightmapConfig.seed + 1,
       heightmapData
     );
@@ -60,7 +73,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (heightmapData) {
       Render.createHeightmapMesh(heightmapData, heightmapConfig);
     }
-    if (treePlacement) {
+    if (treePlacementData) {
+      Render.createTreePlacement(treePlacementData, heightmapConfig);
     }
   });
 });
@@ -84,9 +98,6 @@ function initHeightmapApp() {
       Render.createHeightmapMesh(data, heightmapConfig);
     }
   }, 200);
-
-  const heightmapData = getWasmHeightmap(256, 20, 2.0, 60, 42);
-  Render.createHeightmapMesh(heightmapData, heightmapConfig);
 }
 
 window.addEventListener("load", initHeightmapApp);
