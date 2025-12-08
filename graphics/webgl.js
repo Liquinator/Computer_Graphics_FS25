@@ -41,7 +41,11 @@ function gl_start(canvas, scene) {
         gl.shaderSource(shader, src);
         gl.compileShader(shader);
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-          console.log("Cannot compile shader:", gl.getShaderInfoLog(shader));
+          console.log(
+            "Cannot compile shader:",
+            gl.getShaderInfoLog(shader),
+            type
+          );
         gl.attachShader(gl.program, shader);
       }
 
