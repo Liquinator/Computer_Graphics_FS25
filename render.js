@@ -7,36 +7,36 @@ const lightConfig = {
   pos: [100.0, 300.0, 200.0],
   lookDir: [0.0, 0.0, 1.0],
 
-  flatColor: [0.2, 0.6, 0.2],
-  steepColor: [0.4, 0.3, 0.2],
+  flatColor: [0.294, 0.545, 0.231],
+  steepColor: [0.337, 0.337, 0.337],
 
-  steepness: 0.85,
+  steepness: 0.75,
   lightStrength: 1.2,
   ambientStrength: 0.3,
 };
 
-export function createHeightmapMesh(heightmapData, size) {
+export function createHeightmapMesh(heightmapData, heightmapConfig) {
   const vertexData = [];
-  const heightScale = 60.0;
 
   function addVertex(x, y) {
-    const height = heightmapData[x * size + y] * heightScale;
-    vertexData.push(x - size / 2);
+    const height = heightmapData[x * heightmapConfig.size + y];
+    vertexData.push(x - heightmapConfig.size / 2);
+
     vertexData.push(height);
-    vertexData.push(y - size / 2);
+    vertexData.push(y - heightmapConfig.size / 2);
     const getH = (nx, ny) => {
-      nx = Math.max(0, Math.min(size - 1, nx));
-      ny = Math.max(0, Math.min(size - 1, ny));
-      return heightmapData[nx * size + ny];
+      nx = Math.max(0, Math.min(heightmapConfig.size - 1, nx));
+      ny = Math.max(0, Math.min(heightmapConfig.size - 1, ny));
+      return heightmapData[nx * heightmapConfig.size + ny];
     };
 
     const hL = getH(x - 1, y);
     const hR = getH(x + 1, y);
     const hD = getH(x, y - 1);
     const hU = getH(x, y + 1);
-    let nx = (hL - hR) * heightScale;
+    let nx = hL - hR;
     let ny = 2.0;
-    let nz = (hD - hU) * heightScale;
+    let nz = hD - hU;
 
     const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
     vertexData.push(nx / len);
@@ -44,8 +44,8 @@ export function createHeightmapMesh(heightmapData, size) {
     vertexData.push(nz / len);
   }
 
-  for (let x = 0; x < size - 1; x++) {
-    for (let y = 0; y < size - 1; y++) {
+  for (let x = 0; x < heightmapConfig.size - 1; x++) {
+    for (let y = 0; y < heightmapConfig.size - 1; y++) {
       addVertex(x, y);
       addVertex(x + 1, y);
       addVertex(x, y + 1);
