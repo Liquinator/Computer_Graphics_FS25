@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       treePlacementConfig.density,
       treePlacementConfig.maxSlope,
       heightmapConfig.seed + 1,
+      heightmapConfig.scale,
       heightmapData
     );
 

@@ -38,10 +38,11 @@ function getWasmHeightmap(size, octaves, freq, scale, seed) {
   return heightData;
 }
 
-function getWasmTreeLocation(size, treeLine, density, maxSlope, seed) {
+function getWasmTreeLocation(size, treeLine, density, maxSlope, seed, scale) {
   if (!Module.placeTrees) {
     try {
       Module.placeTrees = Module.cwrap("placeTrees", "number", [
+        "number",
         "number",
         "number",
         "number",
@@ -69,7 +70,8 @@ function getWasmTreeLocation(size, treeLine, density, maxSlope, seed) {
     treeLine,
     density,
     maxSlope,
-    seed
+    seed,
+    scale
   );
   const totalFloats = Module._getTreeCount();
   console.timeEnd("C++ Compute Time");
