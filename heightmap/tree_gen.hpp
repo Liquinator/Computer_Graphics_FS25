@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <random>
 #include <vector>
 
 #include "heightmap_gen.hpp"
@@ -12,6 +13,7 @@ struct TreePlacementConfig {
   float treeDensity = 0.4;
   unsigned int moistureSeedOffset = 1;
   double scale = 60.0;
+  int seed = 42;
 };
 
 inline glm::vec3 surface_normal(int i, int j,
@@ -41,8 +43,10 @@ inline std::vector<glm::vec3> place_trees_seq(
     const TreePlacementConfig& config = TreePlacementConfig{}) {
   std::vector<glm::vec3> treeLocation;
   int dimension = std::sqrt(heightmap.size());
-
   glm::vec2 dim = glm::vec2(dimension, dimension);
+
+  std::mt19937 gen(config.seed + 123);
+  std::uniform_real_distribution<float> offset_dist(-0.4, 0.4);
 
   for (int x = 0; x < dim.x; x++) {
     for (int y = 0; y < dim.y; y++) {
@@ -53,7 +57,20 @@ inline std::vector<glm::vec3> place_trees_seq(
       glm::vec3 surface_norm = surface_normal(x, y, heightmap, config);
       if (glm::dot(surface_norm, glm::vec3(0.0, 0.0, 1.0)) < config.maxSlope)
         continue;
-      treeLocation.push_back(glm::vec3(x, y, height));
+
+      float offset_x = offset_dist(gen);
+      float offset_y = offset_dist(gen);
+
+      float final_x =
+          glm::clamp((float)x + offset_x, 0.0f, (float)dimension - 1.0f);
+      float final_y =
+          glm::clamp((float)y + offset_y, 0.0f, (float)dimension - 1.0f);
+
+      int ix = (int)final_x;
+      int iy = (int)final_y;
+      float interpolated_height = heightmap[ix * dimension + iy] / config.scale;
+
+      treeLocation.push_back(glm::vec3(final_x, final_y, height));
     }
   }
   return treeLocation;
