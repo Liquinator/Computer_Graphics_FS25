@@ -94,9 +94,21 @@ function initHeightmapApp() {
       fragmentShader: await Render.createFragmentShader(),
       update: () => Render.updateScene(heightmapConfig),
     });
-    const data = getWasmHeightmap(256, 20, 2.0, 60, 42);
-    if (data) {
-      Render.createHeightmapMesh(data, heightmapConfig);
+    const heightmapData = getWasmHeightmap(256, 20, 2.0, 60, 42);
+    if (heightmapData) {
+      Render.createHeightmapMesh(heightmapData, heightmapConfig);
+    }
+    const treePlacementData = getWasmTreeLocation(
+      heightmapConfig.size,
+      treePlacementConfig.treeLine,
+      treePlacementConfig.density,
+      treePlacementConfig.maxSlope,
+      heightmapConfig.seed + 1,
+      heightmapConfig.scale,
+      heightmapData
+    );
+    if (treePlacementData) {
+      Render.createTreePlacement(treePlacementData, heightmapConfig);
     }
   }, 200);
 }
