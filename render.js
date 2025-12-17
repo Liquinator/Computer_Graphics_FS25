@@ -230,8 +230,12 @@ export function updateScene(heightmapConfig) {
     setUniform("3fv", "uTreeTrunkColor", lightConfig.treeTrunkColor);
     setUniform("3fv", "uTreeLeavesColor", lightConfig.treeLeavesColor);
 
+    setUniform("1i", "uIsTree", 0);
     drawObj(heightmapMesh, modelMatrix, [(1, 1, 1)]);
-    drawObj(treeMesh, modelMatrix, [(1, 1, 1)]);
+    if (treeMesh) {
+      setUniform("1i", "uIsTree", 1);
+      drawObj(treeMesh, modelMatrix, [(1, 1, 1)]);
+    }
   }
 }
 

@@ -18,5 +18,5 @@ void main() {
    vNor = nor.xyz;
    vLocalNor = aNor;
 
-   vDist = length(3.0 * pos.xyz);
+   vDist = length(pos.xyz);
 }

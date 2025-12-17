@@ -8,12 +8,15 @@ in float vDist;
 
 uniform vec3 uLightPos;
 uniform vec3 uFlatColor;
-uniform vec3 uTreeTrunkColor;
 uniform vec3 uSteepColor;
-
 uniform float uSteepness;
+
 uniform float uLightStrength;
 uniform float uAmbientStrength;
+
+uniform vec3 uTreeTrunkColor;
+uniform vec3 uTreeLeavesColor;
+uniform int uIsTree;
 
 out vec4 fragColor;
 
@@ -24,23 +27,32 @@ void main() {
     vec3 V = normalize(-vPos);
     float alpha = 1.0;
 
-    vec3 terrainColor;
-    if(localN.y < uSteepness) {
-        terrainColor = uSteepColor;
+    vec3 baseColor;
+
+    if (uIsTree == 1) {
+        float treeMix = smoothstep(0.2, 0.6, localN.y);
+        baseColor = mix(uTreeTrunkColor, uTreeLeavesColor, treeMix);
     } else {
-        terrainColor = uFlatColor;
+        float terrainMix = smoothstep(uSteepness - 0.15, uSteepness + 0.15, localN.y);
+        baseColor = mix(uSteepColor, uFlatColor, terrainMix);
     }
 
     float diff = max(dot(N, L), 0.0);
-    
     vec3 R = reflect(-L, N);
     float spec = pow(max(dot(V, R), 0.0), 64.0) * 0.5;
-    vec3 lightCalc = (uFlatColor * uLightStrength) * (diff + uAmbientStrength + spec);
-    vec3 result = terrainColor * uLightStrength * (diff + uAmbientStrength + spec);
 
-    float fogStart = 2.0;
-    float fogEnd = 7.0;
-    float fogFactor = clamp((vDist - fogStart) / (fogEnd - fogStart), 0.0, 1.0);
+    float rim = 1.0 - max(dot(V, N), 0.0);
+    rim = smoothstep(0.6, 1.0, rim);
+    vec3 rimColor = vec3(0.8, 0.9, 1.0) * rim * 0.3;
+
+    vec3 lightCalc = (baseColor * uLightStrength) * (diff + uAmbientStrength + spec) + rimColor;
+    vec3 result = baseColor * uLightStrength * (diff + uAmbientStrength + spec);
+
+    float fogStart = 5.0; 
+    float fogEnd = 10.0; 
+
+
+   float fogFactor = smoothstep(fogStart, fogEnd, vDist);
     vec3 fogColor = vec3(0.6, 0.8, 0.9);
 
     vec3 finalColor = mix(result, fogColor, fogFactor);
